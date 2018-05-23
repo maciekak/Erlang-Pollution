@@ -11,7 +11,7 @@
 
 %% API
 -export([createMonitor/0, addStation/3, addValue/5, removeValue/4,
-  getOneValue/4, getStationMean/3, getAreaMean/4]).
+  getOneValue/4, getStationMean/3, getAreaMean/4, crash/0]).
 
 -record(station, {name, place}).
 -record(measurement, {datetime, type, value}).
@@ -124,3 +124,8 @@ getAreaMean(Station, Radius, Type, Monitor) ->
       _ -> Sum / Num
       end
   end.
+
+
+crash() ->
+  erlang:display("Tutaj"),
+  1 / 0.
