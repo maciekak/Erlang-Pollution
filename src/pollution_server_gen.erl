@@ -11,16 +11,16 @@
 
 -behaviour(gen_server).
 
--export([start_link/1, init/1, handle_call/3]).
+-export([start_link/1, init/1, handle_call/3, handle_cast/2]).
 
 %% gen_server callbacks
 -export([addStation/2
-  ,addValue/4
-  ,removeValue/3
-  ,getOneValue/3
-  ,getStationMean/2
-  ,getAreaMean/3
-  ,terminate/0]).
+  , addValue/4
+  , removeValue/3
+  , getOneValue/3
+  , getStationMean/2
+  , getAreaMean/3
+  , terminate/0, crash/0]).
 
 
 start_link(InitValue) ->
@@ -51,6 +51,8 @@ getStationMean(Station, Type) ->
 getAreaMean(Station, Radius, Type) ->
   gen_server:call(pollution_server_gen, {getAreaMean, {Station, Radius, Type}}).
 
+crash() ->
+  gen_server:cast(pollution_server_gen, {crash, {0}}).
 
 handle_call({addStation, Args},_From,LoopData) ->
   {Name, Coordinates} = Args,
@@ -89,7 +91,11 @@ handle_call({getStationMean, Args},_From,LoopData) ->
 
 handle_call({getAreaMean, Args},_From,LoopData) ->
   {Station, Radius, Type} = Args,
-  Res = pollution:getAreaMean(Station, Radius, Type),
+  Res = pollution:getAreaMean(Station, Radius, Type, LoopData),
   {reply, Res, LoopData}.
+
+handle_cast({crash, Args}, LoopData) ->
+  1/0,
+  {noreply, LoopData}.
 
 terminate() -> gen_server:stop(pollution_server_gen).
